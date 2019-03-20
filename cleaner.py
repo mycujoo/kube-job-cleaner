@@ -89,7 +89,7 @@ def main():
     parser.add_argument('--seconds', type=int, default=3600, help='Delete all finished jobs older than ..')
     parser.add_argument('--timeout-seconds', type=int, default=-1, help='Kill all jobs older than ..')
     parser.add_argument('--dry-run', action='store_true', help='Dry run mode')
-    parser.add_argument('--namespace', type=str, default=None, help='Only search for completed jobs in a single namespace')
+    parser.add_argument('--namespace', type=str, default='default', help='Only search for completed jobs in a single namespace')
     args = parser.parse_args()
 
     try:
@@ -100,6 +100,8 @@ def main():
     api = pykube.HTTPClient(config)
 
     namespace = args.namespace or pykube.all
+
+    print("Namespace '{}' selected".format(namespace))
 
     for job in pykube.Job.objects(api, namespace=namespace):
         delete_if_expired(args.dry_run, job, job_expired(args.seconds, args.timeout_seconds, job))
